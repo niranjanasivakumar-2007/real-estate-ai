@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestIQ — Upload Listing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+
+        nav {
+            background: #1a1a2e;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 22px; font-weight: 700; color: #fff; }
+        .logo span { color: #4f8ef7; }
+
+        .nav-back {
+            color: #aaa;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover { color: #fff; }
+
+        /* PAGE LAYOUT */
+        .page-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 36px;
+        }
+
+        /* FORM SECTIONS */
+        .form-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            border: 1px solid #eee;
+            margin-bottom: 24px;
+        }
+
+        .form-section h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f1f3f5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 11px 14px;
+            border: 1.5px solid #e8ecf0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            color: #1a1a2e;
+            transition: border 0.2s;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus { border-color: #4f8ef7; }
+
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        /* IMAGE UPLOAD ZONE */
+        .upload-zone {
+            border: 2px dashed #d0d9e8;
+            border-radius: 14px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafbff;
+            position: relative;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #4f8ef7;
+            background: rgba(79,142,247,0.04);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-icon { font-size: 40px; margin-bottom: 14px; }
+
+        .upload-zone h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+
+        .upload-zone p {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .upload-btn-label {
+            display: inline-block;
+            padding: 9px 22px;
+            background: #4f8ef7;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* IMAGE PREVIEWS */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            background: #e8ecf0;
+            border: 1px solid #eee;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .preview-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            font-size: 10px;
+            padding: 4px 8px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+
+        /* AI STATUS */
+        .ai-status {
+            background: #f0f7ff;
+            border: 1px solid #d0e4ff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .ai-status h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .ai-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .ai-check .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            flex-shrink: 0;
+        }
+
+        .ai-check .dot.running { background: #4f8ef7; animation: pulse 1s infinite; }
+        .ai-check .dot.done { background: #38bc76; }
+        .ai-check .dot.failed { background: #e53e3e; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* SUBMIT */
+        .submit-row {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .btn-cancel {
+            padding: 13px 28px;
+            background: #f1f3f5;
+            color: #555;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover { background: #e8ecf0; }
+
+        .btn-submit {
+            padding: 13px 36px;
+            background: #4f8ef7;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover { background: #3a7be0; transform: translateY(-1px); }
+        .btn-submit:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+        /* ALERT */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error { background: #fff0f0; color: #e53e3e; border: 1px solid #fed7d7; }
+        .alert.success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+
+        /* SUCCESS STATE */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .success-state .icon { font-size: 56px; margin-bottom: 16px; }
+        .success-state h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .success-state p { color: #666; font-size: 15px; margin-bottom: 28px; }
+
+        .success-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-goto {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-goto.primary { background: #4f8ef7; color: #fff; }
+        .btn-goto.secondary { background: #f1f3f5; color: #555; }
+        .btn-goto.primary:hover { background: #3a7be0; }
+        .btn-goto.secondary:hover { background: #e8ecf0; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            nav { padding: 16px 24px; }
+            .form-section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">Nest<span>IQ</span></div>
+    <div class="nav-back" onclick="window.location.href='/seller/dashboard'">
+        ← Back to Dashboard
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <h1 class="page-title">Upload New Listing</h1>
+    <p class="page-subtitle">Fill in the property details and upload images — AI will handle the rest</p>
+
+    <div id="alert" class="alert"></div>
+
+    <!-- UPLOAD FORM -->
+    <div id="uploadForm">
+
+        <!-- PROPERTY DETAILS -->
+        <div class="form-section">
+            <h2>🏠 Property Details</h2>
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Property Title</label>
+                    <input type="text" id="propTitle"
+                        placeholder="e.g. Spacious 3BHK in Anna Nagar">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="propLocation"
+                        placeholder="City, area or neighbourhood">
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" id="propPrice" placeholder="e.g. 4500000">
+                </div>
+                <div class="form-group">
+                    <label>Land Size</label>
+                    <input type="text" id="propLandSize"
+                        placeholder="e.g. 1200 sq ft or 3 cents">
+                </div>
+                <div class="form-group">
+                    <label>Property Type</label>
+                    <select id="propType">
+                        <option value="">Select type</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="house">Independent House</option>
+                        <option value="villa">Villa</option>
+                        <option value="plot">Plot / Land</option>
+                        <option value="commercial">Commercial</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea id="propDescription"
+                        placeholder="Describe the property — key features, nearby amenities, unique aspects..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMAGE UPLOAD -->
+        <div class="form-section">
+            <h2>📸 Property Images</h2>
+
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="imageInput" multiple
+                    accept="image/*" onchange="handleImageSelect(this)">
+                <div class="upload-icon">📷</div>
+                <h3>Drop images here or click to browse</h3>
+                <p>Upload multiple images — AI will group them by room automatically<br>
+                Supported: JPG, PNG, WEBP — Max 10MB per image</p>
+                <span class="upload-btn-label">Choose Images</span>
+            </div>
+
+            <div class="preview-grid" id="previewGrid"></div>
+
+            <!-- AI STATUS -->
+            <div class="ai-status" id="aiStatus">
+                <h4>🤖 AI Processing Pipeline</h4>
+                <div class="ai-check" id="check1">
+                    <div class="dot" id="dot1"></div>
+                    <span>Quality Check — verifying image clarity and brightness</span>
+                </div>
+                <div class="ai-check" id="check2">
+                    <div class="dot" id="dot2"></div>
+                    <span>Room Grouping — detecting multi-angle images of same room</span>
+                </div>
+                <div class="ai-check" id="check3">
+                    <div class="dot" id="dot3"></div>
+                    <span>Classification — identifying room type and design style</span>
+                </div>
+                <div class="ai-check" id="check4">
+                    <div class="dot" id="dot4"></div>
+                    <span>Uploading to cloud storage</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="submit-row">
+            <button class="btn-cancel"
+                onclick="window.location.href='/seller/dashboard'">Cancel</button>
+            <button class="btn-submit" id="submitBtn"
+                onclick="submitListing()">Upload Listing</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="success-state" id="successState">
+        <div class="icon">🎉</div>
+        <h2>Listing Uploaded Successfully!</h2>
+        <p>Your property has been processed by AI and is now live on NestIQ.</p>
+        <div class="success-btns">
+            <button class="btn-goto primary"
+                onclick="window.location.href='/seller/dashboard'">
+                Go to Dashboard
+            </button>
+            <button class="btn-goto secondary" onclick="resetForm()">
+                Upload Another
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedFiles = [];
+
+    // Check seller session
+    window.onload = async () => {
+        const res = await fetch('/session');
+        const data = await res.json();
+        if (!data.logged_in || data.role !== 'seller') {
+            window.location.href = '/';
+        }
+    }
+
+    // Drag and drop
+    const zone = document.getElementById('uploadZone');
+    zone.addEventListener('dragover', e => {
+        e.preventDefault();
+        zone.classList.add('dragover');
+    });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files).filter(f =>
+            f.type.startsWith('image/'));
+        addFiles(files);
+    });
+
+    function handleImageSelect(input) {
+        const files = Array.from(input.files);
+        addFiles(files);
+    }
+
+    function addFiles(files) {
+        files.forEach(file => {
+            if (!selectedFiles.find(f => f.name === file.name)) {
+                selectedFiles.push(file);
+            }
+        });
+        renderPreviews();
+    }
+
+    function renderPreviews() {
+        const grid = document.getElementById('previewGrid');
+        grid.innerHTML = selectedFiles.map((file, i) => {
+            const url = URL.createObjectURL(file);
+            return `
+                <div class="preview-item" id="preview_${i}">
+                    <img src="${url}" alt="${file.name}">
+                    <button class="preview-remove"
+                        onclick="removeFile(${i})">×</button>
+                    <div class="preview-label">${file.name.substring(0, 20)}</div>
+                </div>`;
+        }).join('');
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        renderPreviews();
+    }
+
+    function showAlert(msg, type) {
+        const el = document.getElementById('alert');
+        el.textContent = msg;
+        el.className = `alert ${type}`;
+        el.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setDot(id, state) {
+        document.getElementById(id).className = `dot ${state}`;
+    }
+
+    async function submitListing() {
+        const title = document.getElementById('propTitle').value.trim();
+        const location = document.getElementById('propLocation').value.trim();
+        const price = document.getElementById('propPrice').value.trim();
+        const landSize = document.getElementById('propLandSize').value.trim();
+        const description = document.getElementById('propDescription').value.trim();
+
+        if (!title || !location || !price) {
+            showAlert('Please fill in Title, Location and Price', 'error');
+            return;
+        }
+
+        if (!selectedFiles.length) {
+            showAlert('Please upload at least one image', 'error');
+            return;
+        }
+
+        // Disable submit button
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Uploading...';
+
+        // Show AI status
+        document.getElementById('aiStatus').style.display = 'block';
+
+        // Simulate AI pipeline steps
+        setDot('dot1', 'running');
+        await sleep(1000);
+        setDot('dot1', 'done');
+
+        setDot('dot2', 'running');
+        await sleep(1000);
+        setDot('dot2', 'done');
+
+        setDot('dot3', 'running');
+        await sleep(1000);
+        setDot('dot3', 'done');
+
+        setDot('dot4', 'running');
+
+        // Build form data
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('location', location);
+        formData.append('price', price);
+        formData.append('land_size', landSize);
+        formData.append('description', description);
+        selectedFiles.forEach(file => formData.append('images', file));
+
+        try {
+            const res = await fetch('/seller/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+            setDot('dot4', 'done');
+
+           if (res.ok) {
+    // Show warning if some images were rejected
+    if (data.warning) {
+        const rejectedNames = data.rejected.map(r =>
+            `• ${r.filename} (${r.reason})`).join('\n');
+        alert(`⚠️ Upload successful but some images were rejected:\n\n${rejectedNames}\n\nOnly good quality images were uploaded.`);
+    }
+    await sleep(600);
+    document.getElementById('uploadForm').style.display = 'none';
+    document.getElementById('successState').style.display = 'block';
+
+} else if (data.error === 'all_rejected') {
+    // All images failed quality check
+    const rejectedNames = data.rejected.map(r =>
+        `• ${r.filename}: ${r.reason}`).join('\n');
+    showAlert(
+        `All images failed quality check:\n${rejectedNames}\n\nPlease upload clearer, well-lit photos.`,
+        'error'
+    );
+    setDot('dot1', 'failed');
+    btn.disabled = false;
+    btn.textContent = 'Upload Listing';
+
+} else {
+    showAlert(data.error || 'Upload failed. Please try again.', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Upload Listing';
+}
+        } catch (err) {
+            setDot('dot4', 'failed');
+            showAlert('Something went wrong. Please try again.', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Upload Listing';
+        }
+    }
+
+    function resetForm() {
+        selectedFiles = [];
+        document.getElementById('previewGrid').innerHTML = '';
+        document.getElementById('propTitle').value = '';
+        document.getElementById('propLocation').value = '';
+        document.getElementById('propPrice').value = '';
+        document.getElementById('propLandSize').value = '';
+        document.getElementById('propDescription').value = '';
+        document.getElementById('aiStatus').style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = 'Upload Listing';
+        document.getElementById('uploadForm').style.display = 'block';
+        document.getElementById('successState').style.display = 'none';
+        document.getElementById('alert').style.display = 'none';
+        setDot('dot1', ''); setDot('dot2', '');
+        setDot('dot3', ''); setDot('dot4', '');
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+
+</body>
+</html>

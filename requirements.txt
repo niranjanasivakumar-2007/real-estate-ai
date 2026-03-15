@@ -1,0 +1,12 @@
+flask
+flask-cors
+python-dotenv
+pymongo
+cloudinary
+Pillow
+opencv-python
+ultralytics
+transformers
+torch
+torchvision
+requests

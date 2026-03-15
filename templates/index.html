@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestIQ — AI Powered Real Estate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #1a1a2e;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: #1a1a2e;
+            padding: 18px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: #4f8ef7;
+        }
+
+        nav p {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 88vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .hero-content {
+            display: flex;
+            gap: 80px;
+            align-items: center;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .hero-text {
+            flex: 1;
+            color: #fff;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(79, 142, 247, 0.15);
+            border: 1px solid rgba(79, 142, 247, 0.4);
+            color: #4f8ef7;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hero-text h1 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-text h1 span {
+            color: #4f8ef7;
+        }
+
+        .hero-text p {
+            font-size: 17px;
+            color: #aab4c8;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat h3 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #4f8ef7;
+        }
+
+        .stat p {
+            font-size: 12px;
+            color: #888;
+            margin: 0;
+        }
+
+        /* LOGIN CARD */
+        .login-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .tab-switcher {
+            display: flex;
+            background: #f1f3f5;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            color: #1a1a2e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e8ecf0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border 0.2s;
+            outline: none;
+            color: #1a1a2e;
+        }
+
+        .form-group input:focus {
+            border-color: #4f8ef7;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #4f8ef7;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 4px;
+        }
+
+        .btn-primary:hover {
+            background: #3a7be0;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79,142,247,0.35);
+        }
+
+        .divider {
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+            margin: 18px 0;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .switch-link {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            margin-top: 16px;
+        }
+
+        .switch-link a {
+            color: #4f8ef7;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* SELLER SECTION */
+        .seller-section {
+            background: #fff;
+            padding: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            gap: 40px;
+        }
+
+        .seller-text h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .seller-text p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+            max-width: 480px;
+        }
+
+        .seller-contact {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 28px 36px;
+            text-align: center;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .seller-contact p {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .seller-contact h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .contact-icon {
+            width: 32px;
+            height: 32px;
+            background: #4f8ef7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* FEATURES */
+        .features {
+            padding: 80px 60px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .features > p {
+            color: #888;
+            margin-bottom: 50px;
+            font-size: 16px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 24px;
+            text-align: left;
+            border: 1px solid #eee;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(79, 142, 247, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* ERROR/SUCCESS */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert.error { background: #fff0f0; color: #e53e3e; border: 1px solid #fed7d7; }
+        .alert.success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+
+        @media (max-width: 900px) {
+            .hero-content { flex-direction: column; gap: 40px; }
+            .login-card { width: 100%; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .seller-section { flex-direction: column; }
+            nav { padding: 18px 24px; }
+            .hero-text h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">Nest<span>IQ</span></div>
+    <p>AI Powered Real Estate Platform</p>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge">✦ AI Powered Platform</div>
+            <h1>Find Your Dream <span>Home</span> With AI</h1>
+            <p>NestIQ uses artificial intelligence to understand your taste,
+            organize property images by room, and help you visualize spaces
+            before you visit — saving you time and helping you decide faster.</p>
+            <div class="hero-stats">
+                <div class="stat"><h3>4</h3><p>AI Systems</p></div>
+                <div class="stat"><h3>100%</h3><p>Verified Images</p></div>
+                <div class="stat"><h3>Smart</h3><p>Matching</p></div>
+            </div>
+        </div>
+
+        <!-- LOGIN CARD -->
+        <div class="login-card">
+            <div class="tab-switcher">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <!-- LOGIN FORM -->
+            <div id="loginPanel" class="form-panel active">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                </div>
+                <button class="btn-primary" onclick="handleLogin()">Login to NestIQ</button>
+                <div class="switch-link">
+                    Don't have an account? <a href="#" onclick="switchTab('signup')">Sign up free</a>
+                </div>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="signupPanel" class="form-panel">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="signupPhone" placeholder="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Min 6 characters">
+                </div>
+                <button class="btn-primary" onclick="handleSignup()">Create Account</button>
+                <div class="switch-link">
+                    Already have an account? <a href="#" onclick="switchTab('login')">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+    <h2>Why NestIQ is Different</h2>
+    <p>Every feature is powered by pre-trained AI — no guesswork, no random scrolling.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Image Quality Check</h3>
+            <p>Every image is verified and auto-enhanced before it reaches you.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏠</div>
+            <h3>Room Grouping</h3>
+            <p>Multi-angle images of the same room are automatically organized together.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>Style Classification</h3>
+            <p>AI detects room type and interior style so you can filter exactly what you want.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">✨</div>
+            <h3>Design Visualization</h3>
+            <p>See any room in your preferred color or style before making a decision.</p>
+        </div>
+    </div>
+</section>
+
+<!-- SELLER SECTION -->
+<section class="seller-section">
+    <div class="seller-text">
+        <h2>Are You a Property Seller?</h2>
+        <p>NestIQ works with verified partners only. If you're interested in listing
+        your properties on our platform, reach out to us and we'll provide you with
+        a partnership code to access the seller dashboard.</p>
+    </div>
+    <div class="seller-contact">
+        <p>Get in touch to become a partner</p>
+        <h3>Contact Us</h3>
+        <div class="contact-item">
+            <div class="contact-icon">✉</div>
+            <span>partners@nestiq.in</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <span>+91 98765 43210</span>
+        </div>
+        <div class="contact-item">
+            <div class="contact-icon">💬</div>
+            <span>Already a partner? <a href="/seller-login" style="color:#4f8ef7;">Login here</a></span>
+        </div>
+    </div>
+</section>
+
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'signup' && i === 1));
+        });
+        document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
+        document.getElementById('signupPanel').classList.toggle('active', tab === 'signup');
+        hideAlert();
+    }
+
+    function showAlert(msg, type) {
+        const el = document.getElementById('alert');
+        el.textContent = msg;
+        el.className = `alert ${type}`;
+        el.style.display = 'block';
+    }
+
+    function hideAlert() {
+        document.getElementById('alert').style.display = 'none';
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) return showAlert('Please fill in all fields', 'error');
+
+        showAlert('Logging in...', 'success');
+
+        try {
+            const res = await fetch('/buyer/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showAlert(`Welcome back, ${data.name}!`, 'success');
+            setTimeout(() => window.location.href = '/buyer/dashboard', 1000);
+        } else {
+            showAlert(data.error || 'Login failed', 'error');
+        }
+    } catch (err) {
+        showAlert('Connection error. Is the server running?', 'error');
+    }
+}
+    
+
+    async function handleSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+
+    if (!name || !email || !phone || !password)
+        return showAlert('Please fill in all fields', 'error');
+
+    showAlert('Creating account...', 'success');
+
+    try {
+        const res = await fetch('/buyer/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showAlert('Account created! Please login.', 'success');
+            setTimeout(() => switchTab('login'), 1500);
+        } else {
+            showAlert(data.error || 'Signup failed', 'error');
+        }
+    } catch (err) {
+        showAlert('Connection error. Is the server running?', 'error');
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestIQ — Find Your Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+
+        nav {
+            background: #1a1a2e;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 22px; font-weight: 700; color: #fff; }
+        .logo span { color: #4f8ef7; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-user {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { background: rgba(255,255,255,0.15); }
+
+        /* SEARCH BAR */
+        .search-section {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            padding: 50px 60px;
+        }
+
+        .search-section h1 {
+            color: #fff;
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .search-section p {
+            color: #aab4c8;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px 28px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 16px;
+            align-items: end;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .search-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .search-field input,
+        .search-field select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e8ecf0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            color: #1a1a2e;
+            transition: border 0.2s;
+        }
+
+        .search-field input:focus,
+        .search-field select:focus { border-color: #4f8ef7; }
+
+        .btn-search {
+            background: #4f8ef7;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background: #3a7be0;
+            transform: translateY(-1px);
+        }
+
+        /* RESULTS */
+        .results-section {
+            padding: 40px 60px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .results-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* PROPERTY CARDS */
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .property-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+        }
+
+        .card-image {
+            position: relative;
+            height: 200px;
+            background: #e8ecf0;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .property-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #4f8ef7;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover { background: #fff; transform: scale(1.1); }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .card-location {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            background: #f1f3f5;
+            color: #555;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid #f1f3f5;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 14px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .btn-view {
+            background: #f1f3f5;
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-view:hover { background: #4f8ef7; color: #fff; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #aaa;
+        }
+
+        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 18px; color: #555; margin-bottom: 8px; }
+        .empty-state p { font-size: 14px; }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+            font-size: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .search-bar { grid-template-columns: 1fr 1fr; }
+            .properties-grid { grid-template-columns: 1fr 1fr; }
+            nav, .search-section, .results-section { padding-left: 24px; padding-right: 24px; }
+        }
+
+        @media (max-width: 600px) {
+            .properties-grid { grid-template-columns: 1fr; }
+            .search-bar { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">Nest<span>IQ</span></div>
+    <div class="nav-right">
+        <span class="nav-user" id="navUser">Welcome back!</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<!-- SEARCH SECTION -->
+<section class="search-section">
+    <h1 id="welcomeMsg">Find Your Perfect Home</h1>
+    <p>Search by location, budget, room type or design style</p>
+    <div class="search-bar">
+        <div class="search-field">
+            <label>Location</label>
+            <input type="text" id="searchLocation" placeholder="City, area or neighbourhood">
+        </div>
+        <div class="search-field">
+            <label>Min Budget (₹)</label>
+            <input type="number" id="budgetMin" placeholder="e.g. 2000000">
+        </div>
+        <div class="search-field">
+            <label>Max Budget (₹)</label>
+            <input type="number" id="budgetMax" placeholder="e.g. 8000000">
+        </div>
+        <div class="search-field">
+            <label>Style</label>
+            <select id="styleFilter">
+                <option value="">Any Style</option>
+                <option value="modern">Modern</option>
+                <option value="minimalist">Minimalist</option>
+                <option value="farmhouse">Farmhouse</option>
+                <option value="traditional">Traditional</option>
+                <option value="industrial">Industrial</option>
+                <option value="luxury">Luxury</option>
+            </select>
+        </div>
+        <button class="btn-search" onclick="searchProperties()">Search</button>
+    </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results-section">
+    <div class="results-header">
+        <h2>Available Properties</h2>
+        <span class="results-count" id="resultsCount"></span>
+    </div>
+    <div class="properties-grid" id="propertiesGrid">
+        <div class="loading">Loading properties...</div>
+    </div>
+</section>
+
+<script>
+    // Load session info
+    window.onload = async () => {
+        const res = await fetch('/session');
+        const data = await res.json();
+        if (!data.logged_in) {
+            window.location.href = '/';
+            return;
+        }
+        document.getElementById('navUser').textContent = `Hi, ${data.name}`;
+        document.getElementById('welcomeMsg').textContent = `Find Your Perfect Home, ${data.name}`;
+        loadProperties();
+    }
+
+    async function loadProperties() {
+        const res = await fetch('/properties');
+        const data = await res.json();
+        renderCards(data.properties);
+    }
+
+    async function searchProperties() {
+        const location = document.getElementById('searchLocation').value;
+        const budgetMin = document.getElementById('budgetMin').value;
+        const budgetMax = document.getElementById('budgetMax').value;
+        const style = document.getElementById('styleFilter').value;
+
+        let url = `/buyer/search?`;
+        if (location) url += `location=${location}&`;
+        if (budgetMin) url += `budget_min=${budgetMin}&`;
+        if (budgetMax) url += `budget_max=${budgetMax}&`;
+        if (style) url += `style=${style}&`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        renderCards(data.results);
+    }
+
+    function renderCards(properties) {
+        const grid = document.getElementById('propertiesGrid');
+        document.getElementById('resultsCount').textContent =
+            `${properties.length} propert${properties.length === 1 ? 'y' : 'ies'} found`;
+
+        if (!properties.length) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1">
+                    <div class="icon">🏠</div>
+                    <h3>No properties found</h3>
+                    <p>Try adjusting your search filters</p>
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = properties.map(p => `
+            <div class="property-card" onclick="viewProperty('${p._id}')">
+                <div class="card-image">
+                    ${p.images && p.images[0]
+                        ? `<img src="${p.images[0]}" alt="${p.title}">`
+                        : `<div style="width:100%;height:100%;display:flex;align-items:center;
+                           justify-content:center;font-size:40px;color:#ccc">🏠</div>`}
+                    <div class="card-badge">For Sale</div>
+                    <div class="card-actions">
+                        <button class="action-btn" onclick="likeProperty(event, '${p._id}')">♡</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+                    <div class="card-title">${p.title}</div>
+                    <div class="card-location">📍 ${p.location}</div>
+                    <div class="card-tags">
+                        ${p.land_size ? `<span class="tag">📐 ${p.land_size}</span>` : ''}
+                        <span class="tag">🏠 ${p.images ? p.images.length : 0} photos</span>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-stats">
+                            <span>👁 ${p.views || 0}</span>
+                            <span>♡ ${p.likes || 0}</span>
+                        </div>
+                        <button class="btn-view">View Property</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function likeProperty(event, id) {
+        event.stopPropagation();
+        await fetch(`/buyer/property/${id}/like`, { method: 'POST' });
+        loadProperties();
+    }
+
+    function viewProperty(id) {
+        window.location.href = `/listing/${id}`;
+    }
+
+    async function logout() {
+        await fetch('/logout', { method: 'POST' });
+        window.location.href = '/';
+    }
+</script>
+
+</body>
+</html>

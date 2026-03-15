@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestIQ — Seller Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a2e; }
+
+        nav {
+            background: #1a1a2e;
+            padding: 16px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 22px; font-weight: 700; color: #fff; }
+        .logo span { color: #4f8ef7; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-user { color: #aaa; font-size: 14px; }
+
+        .btn-upload-nav {
+            background: #4f8ef7;
+            color: #fff;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-upload-nav:hover { background: #3a7be0; }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { background: rgba(255,255,255,0.15); }
+
+        /* HEADER */
+        .dashboard-header {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            padding: 40px 60px;
+            color: #fff;
+        }
+
+        .dashboard-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .dashboard-header p {
+            color: #aab4c8;
+            font-size: 15px;
+        }
+
+        /* STATS CARDS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 32px 60px 0;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.blue { background: rgba(79,142,247,0.12); }
+        .stat-icon.green { background: rgba(56,188,118,0.12); }
+        .stat-icon.orange { background: rgba(255,159,67,0.12); }
+        .stat-icon.purple { background: rgba(147,112,219,0.12); }
+
+        .stat-info h3 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 32px 60px 60px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .btn-new {
+            background: #4f8ef7;
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-new:hover { background: #3a7be0; }
+
+        /* PROPERTY TABLE */
+        .properties-table {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+            padding: 14px 24px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+            padding: 18px 24px;
+            border-bottom: 1px solid #f5f5f5;
+            align-items: center;
+            transition: background 0.15s;
+        }
+
+        .table-row:last-child { border-bottom: none; }
+        .table-row:hover { background: #fafbff; }
+
+        .prop-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .prop-thumb {
+            width: 52px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #e8ecf0;
+            flex-shrink: 0;
+        }
+
+        .prop-thumb-placeholder {
+            width: 52px;
+            height: 40px;
+            border-radius: 8px;
+            background: #e8ecf0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .prop-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 3px;
+        }
+
+        .prop-location {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .table-cell {
+            font-size: 14px;
+            color: #444;
+        }
+
+        .table-cell.price {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            border: 1.5px solid;
+        }
+
+        .btn-view-prop {
+            background: #f1f3f5;
+            color: #1a1a2e;
+            border-color: #e8ecf0;
+        }
+
+        .btn-view-prop:hover { background: #4f8ef7; color: #fff; border-color: #4f8ef7; }
+
+        .btn-delete-prop {
+            background: #fff0f0;
+            color: #e53e3e;
+            border-color: #fed7d7;
+        }
+
+        .btn-delete-prop:hover { background: #e53e3e; color: #fff; border-color: #e53e3e; }
+
+        /* COMMENTS SECTION */
+        .comments-panel {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #eee;
+            padding: 24px;
+            margin-top: 28px;
+        }
+
+        .comments-panel h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a1a2e;
+        }
+
+        .comment-item {
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #4f8ef7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .comment-content .comment-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .comment-content .comment-property {
+            font-size: 11px;
+            color: #4f8ef7;
+            margin-bottom: 4px;
+        }
+
+        .comment-content .comment-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #aaa;
+        }
+
+        .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+        .empty-state h3 { font-size: 16px; color: #666; margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; }
+
+        /* DELETE MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            width: 380px;
+            text-align: center;
+        }
+
+        .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .modal p { font-size: 14px; color: #666; margin-bottom: 24px; }
+
+        .modal-btns { display: flex; gap: 12px; justify-content: center; }
+
+        .btn-cancel {
+            padding: 10px 24px;
+            background: #f1f3f5;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-confirm-delete {
+            padding: 10px 24px;
+            background: #e53e3e;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        @media (max-width: 900px) {
+            nav, .dashboard-header, .stats-row, .main-content {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .table-header, .table-row {
+                grid-template-columns: 1fr 1fr 80px;
+            }
+            .table-header span:nth-child(3),
+            .table-header span:nth-child(4),
+            .table-row .table-cell:nth-child(3),
+            .table-row .table-cell:nth-child(4) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">Nest<span>IQ</span></div>
+    <div class="nav-right">
+        <span class="nav-user" id="navUser"></span>
+        <button class="btn-upload-nav"
+            onclick="window.location.href='/seller/home/upload'">+ New Listing</button>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<!-- HEADER -->
+<div class="dashboard-header">
+    <h1 id="welcomeMsg">Seller Dashboard</h1>
+    <p>Manage your listings and track buyer engagement</p>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon blue">🏠</div>
+        <div class="stat-info">
+            <h3 id="statListings">0</h3>
+            <p>Total Listings</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">👁</div>
+        <div class="stat-info">
+            <h3 id="statViews">0</h3>
+            <p>Total Views</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange">♡</div>
+        <div class="stat-info">
+            <h3 id="statLikes">0</h3>
+            <p>Total Likes</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple">💬</div>
+        <div class="stat-info">
+            <h3 id="statComments">0</h3>
+            <p>Total Comments</p>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="section-header">
+        <h2>Your Listings</h2>
+        <a class="btn-new" href="/seller/home/upload">+ Add New Listing</a>
+    </div>
+
+    <!-- PROPERTIES TABLE -->
+    <div class="properties-table">
+        <div class="table-header">
+            <span>Property</span>
+            <span>Price</span>
+            <span>Views</span>
+            <span>Likes</span>
+            <span>Comments</span>
+            <span>Actions</span>
+        </div>
+        <div id="propertiesTableBody">
+            <div class="empty-state">
+                <div class="icon">⏳</div>
+                <h3>Loading your listings...</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMENTS PANEL -->
+    <div class="comments-panel">
+        <h2>💬 Recent Buyer Comments</h2>
+        <div id="commentsList">
+            <div class="empty-state">
+                <div class="icon">💬</div>
+                <h3>No comments yet</h3>
+                <p>Comments from buyers will appear here</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+        <h3>Delete Listing?</h3>
+        <p>This will permanently remove the property and all its images. This action cannot be undone.</p>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-confirm-delete" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let deleteTargetId = null;
+
+    window.onload = async () => {
+        // Check session
+        const sessionRes = await fetch('/session');
+        const sessionData = await sessionRes.json();
+        if (!sessionData.logged_in || sessionData.role !== 'seller') {
+            window.location.href = '/';
+            return;
+        }
+
+        document.getElementById('navUser').textContent = sessionData.name;
+        document.getElementById('welcomeMsg').textContent =
+            `Welcome back, ${sessionData.name}`;
+
+        loadDashboard();
+    }
+
+    async function loadDashboard() {
+        const res = await fetch('/seller/dashboard/data');
+        const data = await res.json();
+
+        // Stats
+        document.getElementById('statListings').textContent = data.total_properties;
+        document.getElementById('statViews').textContent = data.total_views;
+        document.getElementById('statLikes').textContent = data.total_likes;
+
+        // Count total comments
+        const totalComments = data.properties.reduce((sum, p) =>
+            sum + (p.comments ? p.comments.length : 0), 0);
+        document.getElementById('statComments').textContent = totalComments;
+
+        // Render table
+        renderTable(data.properties);
+
+        // Render comments
+        renderComments(data.properties);
+    }
+
+    function renderTable(properties) {
+        const body = document.getElementById('propertiesTableBody');
+
+        if (!properties.length) {
+            body.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">🏠</div>
+                    <h3>No listings yet</h3>
+                    <p>Click "Add New Listing" to upload your first property</p>
+                </div>`;
+            return;
+        }
+
+        body.innerHTML = properties.map(p => `
+            <div class="table-row">
+                <div class="prop-info">
+                    ${p.images && p.images[0]
+                        ? `<img class="prop-thumb" src="${p.images[0]}" alt="${p.title}">`
+                        : `<div class="prop-thumb-placeholder">🏠</div>`}
+                    <div>
+                        <div class="prop-name">${p.title}</div>
+                        <div class="prop-location">📍 ${p.location}</div>
+                    </div>
+                </div>
+                <div class="table-cell price">
+                    ₹${Number(p.price).toLocaleString('en-IN')}
+                </div>
+                <div class="table-cell">
+                    <span class="stat-pill">👁 ${p.views || 0}</span>
+                </div>
+                <div class="table-cell">
+                    <span class="stat-pill">♡ ${p.likes || 0}</span>
+                </div>
+                <div class="table-cell">
+                    <span class="stat-pill">💬 ${p.comments ? p.comments.length : 0}</span>
+                </div>
+                <div class="row-actions">
+                    <button class="btn-action btn-view-prop"
+                        onclick="window.location.href='/listing/${p._id}'">View</button>
+                    <button class="btn-action btn-delete-prop"
+                        onclick="openDeleteModal('${p._id}')">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderComments(properties) {
+        const el = document.getElementById('commentsList');
+        const allComments = [];
+
+        properties.forEach(p => {
+            (p.comments || []).forEach(c => {
+                allComments.push({ ...c, propertyTitle: p.title });
+            });
+        });
+
+        if (!allComments.length) {
+            el.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">💬</div>
+                    <h3>No comments yet</h3>
+                    <p>Comments from buyers will appear here</p>
+                </div>`;
+            return;
+        }
+
+        el.innerHTML = allComments.map(c => `
+            <div class="comment-item">
+                <div class="comment-avatar">${c.user.charAt(0).toUpperCase()}</div>
+                <div class="comment-content">
+                    <div class="comment-author">${c.user}</div>
+                    <div class="comment-property">on: ${c.propertyTitle}</div>
+                    <div class="comment-text">${c.text}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openDeleteModal(id) {
+        deleteTargetId = id;
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        deleteTargetId = null;
+        document.getElementById('deleteModal').classList.remove('show');
+    }
+
+    async function confirmDelete() {
+        if (!deleteTargetId) return;
+        await fetch(`/seller/property/${deleteTargetId}`, { method: 'DELETE' });
+        closeDeleteModal();
+        loadDashboard();
+    }
+
+    async function logout() {
+        await fetch('/logout', { method: 'POST' });
+        window.location.href = '/';
+    }
+</script>
+
+</body>
+</html>
